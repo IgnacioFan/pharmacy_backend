@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_165214) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_171407) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "opening_days", force: :cascade do |t|
+    t.time "open", null: false
+    t.time "close", null: false
+    t.integer "date_of_week", null: false
+    t.bigint "pharmacy_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pharmacy_id"], name: "index_opening_days_on_pharmacy_id"
+  end
 
   create_table "pharmacies", force: :cascade do |t|
     t.string "name", null: false
