@@ -1,0 +1,18 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  username: kdan
+  password: kdan
+
+development:
+  <<: *default
+  database: pharmacy_development
+
+test:
+  <<: *default
+  database: pharmacy_test
+
+production:
+  <<: *default
+  database: pharmacy_production
