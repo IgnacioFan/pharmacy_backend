@@ -9,19 +9,16 @@ namespace :import_data do
 
     ActiveRecord::Base.transaction do
       pharmacies_json.each do |pharmacy_data|
-        opening_hours_info = pharmacy_data["openingHours"]
-        product_masks = pharmacy_data["masks"]
-
         pharmacy = Pharmacy.create(
           name: pharmacy_data["name"].to_s,
           cash_balance: pharmacy_data["cashBalance"].presence || 0.0
         )
 
-        parse_opening_hours_info(opening_hours_info).each do |attrs|
+        parse_opening_hours_info(pharmacy_data["openingHours"]).each do |attrs|
           pharmacy.opening_hours.find_or_create_by(attrs) if attrs
         end
 
-        product_masks.each do |mask_data|
+        pharmacy_data["masks"].each do |mask_data|
           mask_info = mask_data["name"].to_s
           mask_price = mask_data["price"]
 
@@ -34,6 +31,51 @@ namespace :import_data do
             pharmacy.pharmacy_masks.find_or_create_by(
               price: mask_price,
               mask: @masks_cache[mask_info]
+            )
+          end
+        end
+      end
+    end
+  end
+
+  desc "Import data from users.json file. Run rake import_data:users[PATH]"
+  task :users, [:file_path] => :environment do |_, args|
+    file_path = args[:file_path]
+    validate_file(file_path)
+
+    users_json = JSON.parse(File.read(file_path))
+    @pharmacies_cache = {}
+    @masks_cache = {}
+
+    ActiveRecord::Base.transaction do
+      users_json.each do |user_data|
+        user = User.create(
+          name: user_data["name"].to_s,
+          cash_balance: user_data["cashBalance"].presence || 0.0
+        )
+
+        user_data["purchaseHistories"].each do |purchase_data|
+          pharmacy_name = purchase_data["pharmacyName"].to_s
+          mask_info = purchase_data["maskName"].to_s
+
+          if pharmacy_name.present? && !@pharmacies_cache.key?(pharmacy_name)
+            pharmacy = Pharmacy.find_by(name: pharmacy_name)
+            @pharmacies_cache[pharmacy_name] = pharmacy if pharmacy.present?
+          end
+
+          if mask_info.present? && !@masks_cache.key?(mask_info)
+            mask = Mask.find_by(parse_mask_info(mask_info))
+            @masks_cache[mask_info] = mask if mask.present?
+          end
+
+          if @pharmacies_cache.key?(pharmacy_name) && @masks_cache.key?(mask_info)
+            pharmacy_mask = @pharmacies_cache[pharmacy_name].pharmacy_masks.find_by(mask: @masks_cache[mask_info])
+            next unless pharmacy_mask.present?
+
+            user.purchase_histories.find_or_create_by(
+              pharmacy_mask: pharmacy_mask,
+              transaction_amount: purchase_data["transactionAmount"],
+              transaction_date: purchase_data["transactionDate"]
             )
           end
         end
