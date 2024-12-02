@@ -22,14 +22,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_174816) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "opening_days", force: :cascade do |t|
+  create_table "opening_hours", force: :cascade do |t|
     t.time "open", null: false
     t.time "close", null: false
-    t.integer "date_of_week", null: false
-    t.bigint "pharmacy_id"
+    t.integer "weekday", null: false
+    t.bigint "pharmacy_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["pharmacy_id"], name: "index_opening_days_on_pharmacy_id"
+    t.index ["pharmacy_id"], name: "index_opening_hours_on_pharmacy_id"
   end
 
   create_table "pharmacies", force: :cascade do |t|
@@ -41,14 +41,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_174816) do
 
   create_table "pharmacy_masks", force: :cascade do |t|
     t.bigint "pharmacy_id", null: false
-    t.bigint "masks_id", null: false
+    t.bigint "mask_id", null: false
     t.decimal "price", precision: 5, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["masks_id"], name: "index_pharmacy_masks_on_masks_id"
+    t.index ["mask_id"], name: "index_pharmacy_masks_on_mask_id"
     t.index ["pharmacy_id"], name: "index_pharmacy_masks_on_pharmacy_id"
   end
 
-  add_foreign_key "pharmacy_masks", "masks", column: "masks_id"
+  add_foreign_key "opening_hours", "pharmacies"
+  add_foreign_key "pharmacy_masks", "masks"
   add_foreign_key "pharmacy_masks", "pharmacies"
 end

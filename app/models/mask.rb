@@ -10,4 +10,6 @@
 #  updated_at   :datetime         not null
 #
 class Mask < ApplicationRecord
+  has_many :pharmacy_masks
+  has_many :pharmacies, through: :pharmacy_masks
 end
