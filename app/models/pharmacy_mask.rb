@@ -22,4 +22,7 @@
 class PharmacyMask < ApplicationRecord
   belongs_to :pharmacy
   belongs_to :mask
+
+  has_many :purchase_histories
+  has_many :buyers, through: :purchase_histories, class_name: "User", source: :user
 end

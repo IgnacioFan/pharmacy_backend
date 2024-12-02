@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_221704) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_222135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,6 +49,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_221704) do
     t.index ["pharmacy_id"], name: "index_pharmacy_masks_on_pharmacy_id"
   end
 
+  create_table "purchase_histories", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "pharmacy_mask_id", null: false
+    t.decimal "transaction_amount", precision: 5, scale: 2, null: false
+    t.datetime "transaction_date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pharmacy_mask_id"], name: "index_purchase_histories_on_pharmacy_mask_id"
+    t.index ["user_id"], name: "index_purchase_histories_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name", null: false
     t.decimal "cash_balance", precision: 10, scale: 2, null: false
@@ -59,4 +70,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_221704) do
   add_foreign_key "opening_hours", "pharmacies"
   add_foreign_key "pharmacy_masks", "masks"
   add_foreign_key "pharmacy_masks", "pharmacies"
+  add_foreign_key "purchase_histories", "pharmacy_masks"
+  add_foreign_key "purchase_histories", "users"
 end
