@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_172237) do
 
   create_table "pharmacies", force: :cascade do |t|
     t.string "name", null: false
-    t.decimal "cash_balance", precision: 2, null: false
+    t.decimal "cash_balance", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
