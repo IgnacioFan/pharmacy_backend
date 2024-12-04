@@ -8,6 +8,8 @@ class PharmaciesService < ApplicationService
   def call
     pharmacies = query_pharmacies
     success(group_and_format_pharmacies(pharmacies))
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, StandardError => e
+    failure(e.message)
   end
 
   private

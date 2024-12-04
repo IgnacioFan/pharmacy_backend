@@ -8,6 +8,8 @@ class OpeningHoursService < ApplicationService
   def call
     pharmacies = query_pharmacies
     success(transform_pharmacies(pharmacies))
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, StandardError => e
+    failure(e.message)
   end
 
   private

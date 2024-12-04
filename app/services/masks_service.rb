@@ -8,6 +8,8 @@ class MasksService < ApplicationService
   def call
     masks = query_masks
     success(format_masks(masks))
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, StandardError => e
+    failure(e.message)
   end
 
   private

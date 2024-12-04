@@ -115,6 +115,23 @@ paths:
               required:
               - user_id
               - pharmacy_mask_id
+  "/api/v1/purchases/report":
+    get:
+      summary: total purchase amount and number of masks within a date range
+      parameters:
+      - name: start_date
+        in: query
+        description: the start date of the purchase transaction
+        schema:
+          type: string
+      - name: end_date
+        in: query
+        description: the end date of the purchase transaction
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ok
   "/api/v1/search":
     get:
       summary: list relevant search result and ranked by keyword
