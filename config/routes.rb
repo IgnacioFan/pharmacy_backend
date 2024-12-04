@@ -13,6 +13,7 @@ Rails.application.routes.draw do
       get "pharmacies/opening_hours" => "pharmacy#opening_hours"
       get "pharmacies/:pharmacy_id/masks" => "mask#index"
       get "search" => "search#index"
+      get "purchases" => "purchase#index"
     end
   end
 end
