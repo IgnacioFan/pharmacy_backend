@@ -6,6 +6,8 @@ class SearchPharmaciesAndMasksService < ApplicationService
   def call
     ranked_results = match_sorter(pharmacy_results + mask_results)
     success(ranked_results)
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, StandardError => e
+    failure(e.message)
   end
 
   private

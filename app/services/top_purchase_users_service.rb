@@ -8,6 +8,8 @@ class TopPurchaseUsersService < ApplicationService
   def call
     top_users = query_top_users
     success(format_top_users(top_users))
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound, StandardError => e
+    failure(e.message)
   end
 
   private
