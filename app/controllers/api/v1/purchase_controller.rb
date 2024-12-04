@@ -40,7 +40,6 @@ module Api
 
       def valid_date_range?
         if end_date.present? && start_date.present?
-          puts [end_date, valid_date?(end_date)]
           (start_date < end_date) && valid_date?(start_date) && valid_date?(end_date)
         else
           valid_date?(start_date)
