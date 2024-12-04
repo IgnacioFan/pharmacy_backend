@@ -6,7 +6,7 @@ module Api
         if result.success?
           render json: result.payload
         else
-          render json: result.error
+          render json: result.error, status: :bad_request
         end
       end
 
