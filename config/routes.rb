@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       get "pharmacies/:pharmacy_id/masks" => "mask#index"
       get "search" => "search#index"
       get "purchases" => "purchase#index"
+      post "purchases" => "purchase#create"
     end
   end
 end

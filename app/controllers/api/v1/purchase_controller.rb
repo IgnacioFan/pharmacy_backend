@@ -10,15 +10,22 @@ module Api
         if result.success?
           render json: result.payload
         else
-          render json: result.error
+          render json: { error: result.error }, status: :bad_request
+        end
+      end
+
+      def create
+        result = CreatePurchaseHistoryService.call(create_purchase_history_params)
+        if result.success?
+          render json: result.payload, status: :created
+        else
+          render json: { error: result.error }, status: :bad_request
         end
       end
 
       private
 
       def valid_date_range?
-        puts start_date
-        puts end_date
         end_date && (start_date < end_date)
       end
 
@@ -40,6 +47,10 @@ module Api
           start_date: DateTime.parse(start_date).utc.to_s,
           end_date: end_date.present? ? DateTime.parse(end_date).utc.to_s : nil
         }
+      end
+
+      def create_purchase_history_params
+        params.require(:purchase).permit(:user_id, :pharmacy_mask_id)
       end
     end
   end
