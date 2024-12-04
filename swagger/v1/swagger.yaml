@@ -1,17 +1,136 @@
 ---
 openapi: 3.0.1
 info:
-  title: API V1
+  title: Pharmacy Platform API V1
   version: v1
 paths:
-  "/api/v1/pharmacies":
+  "/api/v1/pharmacies/{pharmacy_id}/masks":
     get:
-      summary: list pharmacies
+      summary: list masks for a given pharmacy
+      parameters:
+      - name: pharmacy_id
+        in: path
+        description: pharmacy id
+        required: true
+        schema:
+          type: string
+      - name: order
+        in: query
+        description: order by mask name or price
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: sort in asc or desc
+        schema:
+          type: string
       responses:
         '200':
-          description: successful
+          description: ok
+  "/api/v1/pharmacies/opening_hours":
+    get:
+      summary: list pharmacies at a specific time and weekday
+      parameters:
+      - name: open
+        in: query
+        description: opening time (time format \[hh:mm\])
+        schema:
+          type: string
+      - name: close
+        in: query
+        description: closing time (time format \[hh:mm\])
+        schema:
+          type: string
+      - name: weekday
+        in: query
+        description: 'weekday (0: Mon, 1: Thu, 2: Wed, 3: Thur, 4: Fri, 5: Sat, 6:
+          Sun)'
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: ok
+  "/api/v1/pharmacies":
+    get:
+      summary: list pharmacies with more or less than N mask products within a price
+        range
+      parameters:
+      - name: num
+        in: query
+        description: N mask products
+        schema:
+          type: string
+      - name: price_range
+        in: query
+        description: price range (e.g. 10-15)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: bad request
+  "/api/v1/purchases":
+    get:
+      summary: list top purchase users
+      parameters:
+      - name: top
+        in: query
+        description: the top N purchasing users
+        schema:
+          type: integer
+      - name: start_date
+        in: query
+        description: the start date of the purchase transaction
+        schema:
+          type: string
+      - name: end_date
+        in: query
+        description: the end date of the purchase transaction
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: bad request
+    post:
+      summary: create user purchase history
+      parameters: []
+      responses:
+        '201':
+          description: created
+        '400':
+          description: bad request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                pharmacy_mask_id:
+                  type: integer
+              required:
+              - user_id
+              - pharmacy_mask_id
+  "/api/v1/search":
+    get:
+      summary: list relevant search result and ranked by keyword
+      parameters:
+      - name: keyword
+        in: query
+        description: search keyword
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ok
+        '400':
+          description: bad request
 servers:
-- url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
-      default: www.example.com
+      default: localhost:3000
