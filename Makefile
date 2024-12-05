@@ -3,6 +3,9 @@ POSTGRES_CNAME=pharmacy_db
 POSTGRES_USER=kdan
 POSTGRES_DATABASE_DEV=pharmacy_development
 
+bash:
+	docker exec -it $(APP_CNAME) bash
+
 console:
 	docker exec -it $(APP_CNAME) rails console
 

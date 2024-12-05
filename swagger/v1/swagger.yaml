@@ -31,14 +31,9 @@ paths:
     get:
       summary: list pharmacies at a specific time and weekday
       parameters:
-      - name: open
+      - name: time
         in: query
         description: opening time (time format \[hh:mm\])
-        schema:
-          type: string
-      - name: close
-        in: query
-        description: closing time (time format \[hh:mm\])
         schema:
           type: string
       - name: weekday
@@ -50,6 +45,8 @@ paths:
       responses:
         '200':
           description: ok
+        '422':
+          description: unprocessable entity
   "/api/v1/pharmacies":
     get:
       summary: list pharmacies with more or less than N mask products within a price
@@ -68,8 +65,8 @@ paths:
       responses:
         '200':
           description: ok
-        '400':
-          description: bad request
+        '422':
+          description: unprocessable entity
   "/api/v1/purchases":
     get:
       summary: list top purchase users
