@@ -89,8 +89,8 @@ paths:
       responses:
         '200':
           description: ok
-        '400':
-          description: bad request
+        '422':
+          description: unprocessable entity
     post:
       summary: create user purchase history
       parameters: []
@@ -141,8 +141,8 @@ paths:
       responses:
         '200':
           description: ok
-        '400':
-          description: bad request
+        '422':
+          description: unprocessable entity
 servers:
 - url: http://{defaultHost}
   variables:

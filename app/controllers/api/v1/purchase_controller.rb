@@ -3,7 +3,7 @@ module Api
     class PurchaseController < ApiController
       def index
         unless valid_date_range?
-          render json: { error: 'Invalid date range: start date must be earlier than end date' }, status: :bad_request and return
+          render json: { error: 'Invalid date range: start date must be earlier than end date' }, status: :unprocessable_entity and return
         end
 
         result = TopPurchaseUsersService.call(top_purchase_users_params)
@@ -25,7 +25,7 @@ module Api
 
       def report
         unless valid_date_range?
-          render json: { error: 'Invalid date range: start date must be earlier than end date' }, status: :bad_request and return
+          render json: { error: 'Invalid date range: start date must be earlier than end date' }, status: :unprocessable_entity and return
         end
 
         result = TotalPurchaseAmountAndMaskNumsService.call(total_purchase_amout_and_mask_nums_params)
@@ -47,7 +47,7 @@ module Api
       end
 
       def valid_date?(str)
-        Date.strptime(start_date, "%Y-%m-%d").present? rescue false
+        Date.strptime(str, "%Y-%m-%d").present? rescue false
       end
 
       def start_date
@@ -55,11 +55,11 @@ module Api
       end
 
       def end_date
-        params[:end_date].to_s
+        params[:end_date]&.presence&.to_s
       end
 
       def top
-        params[:top].presence
+        params[:top]&.presence&.to_i
       end
 
       def top_purchase_users_params

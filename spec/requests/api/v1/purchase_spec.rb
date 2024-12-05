@@ -32,11 +32,11 @@ RSpec.describe 'api/v1/purchase', type: :request do
         end
       end
 
-      response(400, 'bad request') do
+      response(422, 'unprocessable entity') do
         let(:end_date) { '2021-01-01' }
 
         run_test! do
-          expect(response).to have_http_status(:bad_request)
+          expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to eq('error' => 'Invalid date range: start date must be earlier than end date')
         end
       end

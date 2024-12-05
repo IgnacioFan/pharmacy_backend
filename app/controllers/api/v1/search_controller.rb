@@ -3,7 +3,7 @@ module Api
     class SearchController < ApiController
       def index
         if keyword.blank?
-          render json: { error: 'Keyword is required' }, status: :bad_request and return
+          render json: { error: 'Keyword is required' }, status: :unprocessable_entity and return
         end
 
         result = SearchPharmaciesAndMasksService.call(keyword)
