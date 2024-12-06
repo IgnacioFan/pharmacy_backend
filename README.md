@@ -12,13 +12,11 @@ $ docker-compose up -d
 # go inside the container, run the migrate data command.
 $ docker exec -it pharmacy_api bash
 
-# To have some seed data in database, you have to reach out this source first (https://github.com/IgnacioFan/phantom_mask/tree/master/data)
-# Please download pharmacies.json and user.json before running the following commands!
-# Don't forget to change the file path that links to the file location.
-$ rake import_data:pharmacies["file_path"]
-$ rake import_data:user["file_path"]
+# Load seed data into PostgreSQL, you have to run the following commands!
+$ rake import_data:pharmacies["db/seeds/pharmacies.json"]
+$ rake import_data:users["db/seeds/users.json"]
 
-# Once you have some data in your database, go check out the API docs (visit Swagger UI)
+# Once you have seed data, check out the API docs (visit Swagger UI)
 # http://localhost:3000/api-docs/index.html
 ```
 
@@ -30,7 +28,14 @@ make test
 
 ### Others
 
+Enter the pharmacy API
+
+```bash
+make bash
+```
+
 Enter rails console?
+
 ```bash
 make console
 ```
