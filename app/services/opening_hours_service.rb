@@ -26,11 +26,7 @@ class OpeningHoursService < ApplicationService
               "close"
             )
             .group(
-              "pharmacy_id,
-              pharmacy_name,
-              weekday,
-              open,
-              close"
+              "pharmacy_id,pharmacy_name,weekday,open,close"
             )
             .order(
               "pharmacy_id ASC, weekday ASC"
