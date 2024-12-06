@@ -14,8 +14,9 @@ namespace :import_data do
           cash_balance: pharmacy_data["cashBalance"].presence || 0.0
         )
 
-        parse_opening_hours_info(pharmacy_data["openingHours"]).each do |attrs|
-          pharmacy.opening_hours.find_or_create_by(attrs) if attrs
+        parse_opening_hours_info(pharmacy_data["openingHours"]).each do |opening_hour_attrs|
+          next unless opening_hour_attrs
+          pharmacy.opening_hours.create(opening_hour_attrs)
         end
 
         pharmacy_data["masks"].each do |mask_data|
@@ -24,11 +25,11 @@ namespace :import_data do
 
           if mask_info.present? && !@masks_cache.key?(mask_info)
             mask_attrs = parse_mask_info(mask_info)
-            @masks_cache[mask_info] = Mask.find_or_create_by(mask_attrs) if mask_attrs
+            @masks_cache[mask_info] = Mask.create(mask_attrs) if mask_attrs
           end
 
           if @masks_cache.key?(mask_info)
-            pharmacy.pharmacy_masks.find_or_create_by(
+            pharmacy.pharmacy_masks.create(
               price: mask_price,
               mask: @masks_cache[mask_info]
             )
@@ -107,34 +108,55 @@ namespace :import_data do
   def parse_opening_hours_info(input)
     return [] unless input.present?
 
-    sections = input.split(" / ").map(&:downcase)
-    res = Array.new(7)
+    sections = input.split(" / ").map { |segment| segment.split(/([^A-Za-z]+)/).map(&:strip) }
+    # 7 day slots
+    weekday_slots = Array.new(7)
 
     sections.each do |section|
-      weekdays = section.scan(/[a-z]+/)
+      weekdays = find_weekdays(section[0...-1])
       next unless weekdays
-      time_match = section.match(/(\d{2}):(\d{2}) - (\d{2}):(\d{2})/)
-      next unless time_match
-
-      open_time = "#{time_match[1]}:#{time_match[2]}"
-      close_time = "#{time_match[3]}:#{time_match[4]}"
+      open_time, close_time = find_open_and_close_times(section[-1])
+      next unless open_time && close_time
 
       weekdays.each do |weekday|
-        weekday_index = weekday_map[weekday]
-        unless weekday_index
-          res = []
-          puts "Error: Invalid day in input: #{input}"
-          break
-        end
-
-        res[weekday_index] = {
+        weekday_slots[weekday] = {
           open: open_time,
           close: close_time,
-          weekday: weekday_index
+          weekday: weekday
         }
       end
     end
-    res
+
+    weekday_slots
+  end
+
+  def find_weekdays(input_arr)
+    weekdays = []
+
+    if input_arr.any?(",")
+      input_arr.each do |ele|
+         next if ele == ","
+         weekdays << weekday_map[ele.downcase]
+       end
+    elsif input_arr[1] == "-"
+      start_day = weekday_map[input_arr[0].downcase]
+      end_day = weekday_map[input_arr[2].downcase]
+      weekdays = (start_day..end_day).to_a
+    else
+      puts "Error: Invalid day in input: #{input_arr.to_s}"
+    end
+
+    weekdays
+  end
+
+  def find_open_and_close_times(input_str)
+    time_match = input_str.match(/(\d{2}):(\d{2}) - (\d{2}):(\d{2})/)
+    unless time_match
+      puts "Error: Invalid time in input: #{input_str}"
+      return []
+    end
+
+    ["#{time_match[1]}:#{time_match[2]}", "#{time_match[3]}:#{time_match[4]}"]
   end
 
   def parse_mask_info(input)
